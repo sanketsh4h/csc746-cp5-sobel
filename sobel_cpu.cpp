@@ -157,6 +157,8 @@ main (int ac, char *av[])
    // now, create a buffer for output
    float *out_data_floats = (float *)malloc(sizeof(float)*nvalues);
 
+   for (int num_threads = 1; num_threads <= 16; num_threads *= 2) {
+        omp_set_num_threads(num_threads); // Set the number of threads
    // do the processing =======================
    std::chrono::time_point<std::chrono::high_resolution_clock> start_time = std::chrono::high_resolution_clock::now();
 
@@ -165,8 +167,8 @@ main (int ac, char *av[])
    std::chrono::time_point<std::chrono::high_resolution_clock> end_time = std::chrono::high_resolution_clock::now();
 
    std::chrono::duration<double> elapsed = end_time - start_time;
-   std::cout << " Elapsed time is : " << elapsed.count() << " " << std::endl;
-
+   std::cout << "Number of threads: " << num_threads << ", Elapsed time is: " << elapsed.count() << " seconds" << std::endl;
+   }
    // write output after converting from floats in range 0..1 to bytes in range 0..255
    unsigned char *out_data_bytes = in_data_bytes;  // just reuse the buffer from before
    for (off_t i=0; i<nvalues; i++)

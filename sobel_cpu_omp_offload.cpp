@@ -43,17 +43,31 @@ char output_fname[] = "../data/processed-raw-int8-4x-cpu.dat";
 
 // see https://en.wikipedia.org/wiki/Sobel_operator
 //
-float
-sobel_filtered_pixel(float *s, int i, int j , int ncols, int nrows, float *gx, float *gy)
-{
+float sobel_filtered_pixel(float *s, int i, int j, int ncols, int nrows, float *gx, float *gy) {
+    float Gx = 0.0;
+    float Gy = 0.0;
 
-   float t=0.0;
+    // Iterate over a 3x3 neighborhood centered at (i, j)
+    for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+            int imageX = j + x;
+            int imageY = i + y;
 
-   // ADD CODE HERE: add your code here for computing the sobel stencil computation at location (i,j)
-   // of input s, returning a float
+            // Ensure the coordinates are within bounds
+            if (imageX >= 0 && imageX < ncols && imageY >= 0 && imageY < nrows) {
+                int sobelIndex = (y + 1) * 3 + (x + 1);
+                float pixelValue = s[imageY * ncols + imageX];
+                Gx += gx[sobelIndex] * pixelValue;
+                Gy += gy[sobelIndex] * pixelValue;
+            }
+        }
+    }
 
-   return t;
+    // Calculate the magnitude of the gradient
+    float G = sqrt(Gx * Gx + Gy * Gy);
+    return G;
 }
+
 
 //
 //  do_sobel_filtering() will iterate over all input image pixels and invoke the
